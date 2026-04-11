@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>smartValora · Calculadora white label para inmobiliarias</title>
+    <meta name="description" content="Ofrece a tus clientes una valoración instantánea de su propiedad con tu marca, capta leads cualificados y destaca frente a tu competencia.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .gradient-bg { background: linear-gradient(145deg, #f8fafc 0%, #ffffff 100%); }
+        .feature-card:hover { transform: translateY(-4px); box-shadow: 0 20px 30px -10px rgba(0,0,0,0.15); }
+        .btn-primary { background-color: #b08d57; color: white; }
+        .btn-primary:hover { background-color: #9e7a48; }
+        .btn-outline-dark { border: 1px solid #1e293b; color: #1e293b; }
+        .btn-outline-dark:hover { background-color: #f1f5f9; }
+        .pricing-card { transition: all 0.2s; }
+        .pricing-card.popular { border: 2px solid #b08d57; transform: scale(1.02); }
+        .faq summary::-webkit-details-marker { display: none; }
+        /* Estilos chat */
+        #chat-button {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: #b08d57;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            cursor: pointer;
+            z-index: 50;
+            transition: transform 0.2s;
+            border: none;
+        }
+        #chat-button:hover { transform: scale(1.1); }
+        #chat-panel {
+            position: fixed;
+            bottom: 100px;
+            right: 24px;
+            width: 320px;
+            max-width: calc(100vw - 48px);
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            z-index: 49;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+        #chat-panel.open { display: flex; }
+        .chat-header {
+            background: #b08d57;
+            color: white;
+            padding: 16px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .chat-header button { background: none; border: none; color: white; font-size: 20px; cursor: pointer; }
+        .chat-messages {
+            padding: 16px;
+            height: 300px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: #f8fafc;
+        }
+        .message {
+            max-width: 80%;
+            padding: 10px 14px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        .message.bot {
+            background: white;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .message.user {
+            background: #b08d57;
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+        .chat-input-area {
+            padding: 12px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            gap: 8px;
+            background: white;
+        }
+        .chat-input-area input {
+            flex: 1;
+            border: 1px solid #cbd5e1;
+            border-radius: 24px;
+            padding: 8px 16px;
+            font-size: 14px;
+            outline: none;
+        }
+        .chat-input-area input:focus { border-color: #b08d57; }
+        .chat-input-area button {
+            background: #b08d57;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .chat-input-area button:hover { background: #9e7a48; }
+        .quick-reply {
+            background: #e2e8f0;
+            color: #1e293b;
+            border: none;
+            border-radius: 20px;
+            padding: 6px 12px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .quick-reply:hover { background: #cbd5e1; }
+        .quick-reply-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            padding: 8px 16px 16px;
+            background: #f8fafc;
+        }
+    </style>
+</head>
+<body class="bg-white text-slate-800 antialiased">
+
+<!-- HEADER -->
+<header class="border-b border-slate-200 sticky top-0 bg-white/90 backdrop-blur-sm z-20">
+    <div class="container mx-auto px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-full bg-slate-900 text-white flex items-center justify-center text-sm font-bold">AE</div>
+            <span class="font-semibold text-lg">smart<span class="text-[#b08d57]">Valora</span></span>
+            <span class="text-xs text-slate-500 hidden md:inline-block ml-2">by Anna Epitié Inmobiliaria</span>
+        </div>
+        <div class="flex gap-3">
+            <a href="#precios" class="hidden sm:inline-block px-4 py-2 text-sm font-medium btn-outline-dark rounded-md">Planes</a>
+            <a href="#demo" class="px-4 py-2 text-sm font-medium btn-primary rounded-md">Solicitar demo</a>
+        </div>
+    </div>
+</header>
+
+<!-- HERO SECTION -->
+<section class="container mx-auto px-6 pt-16 pb-20 md:pt-24 md:pb-28">
+    <div class="grid md:grid-cols-2 gap-12 items-center">
+        <div>
+            <span class="text-sm uppercase tracking-wider text-[#b08d57] font-semibold">Solución white label para agencias</span>
+            <h1 class="text-4xl md:text-5xl font-bold mt-4 leading-tight">Convierte cada valoración en un <span class="text-[#b08d57]">lead cualificado</span></h1>
+            <!-- TU FRASE EN EL HERO -->
+            <p class="text-base text-slate-600 mt-3 italic border-l-4 border-[#b08d57] pl-4">
+                Creado por Anna Epitié, agente inmobiliaria en Manresa, para ayudar a otros profesionales a captar leads sin esfuerzo.
+            </p>
+            <p class="text-lg text-slate-600 mt-4">Ofrece a tus clientes una valoración instantánea de su propiedad con tu marca, capta sus datos automáticamente y destaca frente a tu competencia.</p>
+            <div class="mt-8 flex flex-wrap gap-4">
+                <a href="#demo" class="px-6 py-3 btn-primary text-base font-medium rounded-md shadow-md">Empieza gratis 14 días</a>
+                <a href="#caracteristicas" class="px-6 py-3 border border-slate-300 text-base font-medium rounded-md hover:bg-slate-50">Ver características</a>
+            </div>
+            <p class="text-sm text-slate-500 mt-4">Sin permanencia · Cancela cuando quieras</p>
+        </div>
+        <div class="relative">
+            <div class="bg-white rounded-2xl shadow-2xl p-4 border border-slate-200">
+                <div class="bg-slate-100 rounded-lg p-5">
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="w-8 h-8 bg-slate-300 rounded-full"></div>
+                        <div class="h-4 w-32 bg-slate-300 rounded"></div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="h-10 bg-slate-200 rounded"></div>
+                        <div class="h-10 bg-slate-200 rounded"></div>
+                        <div class="h-10 bg-slate-200 rounded col-span-2"></div>
+                    </div>
+                    <div class="mt-4 h-10 bg-[#b08d57]/20 rounded flex items-center justify-center text-[#b08d57] text-sm font-medium">Tu valoración: 180.000 € – 210.000 €</div>
+                </div>
+            </div>
+            <div class="absolute -bottom-4 -right-4 bg-white rounded-full p-3 shadow-xl border border-slate-200">
+                <span class="text-sm font-bold px-3">🔰 Con tu logo</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- LOGOS / CONFIANZA -->
+<section class="bg-slate-50 py-12">
+    <div class="container mx-auto px-6 text-center">
+        <p class="text-sm text-slate-500 uppercase tracking-wider">Creado desde la experiencia real en el mercado de Manresa y El Bages</p>
+        <div class="flex flex-wrap justify-center gap-8 mt-6 text-slate-500 text-base font-light max-w-2xl mx-auto">
+            <span>🏠 +4 años valorando propiedades en Manresa</span>
+            <span>📊 Motor de precios basado en datos reales por distrito</span>
+            <span>🤝 Actualmente en fase de primeros clientes — plazas limitadas</span>
+        </div>
+    </div>
+</section>
+
+<!-- PROBLEMA / SOLUCIÓN -->
+<section class="container mx-auto px-6 py-20">
+    <div class="text-center max-w-3xl mx-auto">
+        <h2 class="text-3xl md:text-4xl font-bold">Captar leads nunca fue tan fácil</h2>
+        <p class="text-lg text-slate-600 mt-4">Mientras otros siguen usando formularios genéricos, tú ofreces una herramienta de valor real que el cliente quiere usar.</p>
+    </div>
+    <div class="grid md:grid-cols-3 gap-8 mt-16">
+        <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 feature-card transition">
+            <div class="w-12 h-12 bg-[#b08d57]/10 rounded-xl flex items-center justify-center text-2xl mb-5">📊</div>
+            <h3 class="text-xl font-semibold">Valoración instantánea</h3>
+            <p class="text-slate-600 mt-3 italic text-sm">"Después de hacer decenas de valoraciones cada mes, supe que los agentes necesitábamos una forma más rápida de conectar con clientes potenciales. Así nació smartValora."</p>
+            <p class="text-slate-600 mt-2">El cliente obtiene un rango de precio en segundos, basado en distritos y características reales de Manresa y El Bages.</p>
+        </div>
+        <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 feature-card transition">
+            <div class="w-12 h-12 bg-[#b08d57]/10 rounded-xl flex items-center justify-center text-2xl mb-5">📥</div>
+            <h3 class="text-xl font-semibold">Captación automática</h3>
+            <p class="text-slate-600 mt-3">Cada valoración te entrega nombre, email y teléfono. Los leads llegan directamente a tu email o CRM.</p>
+        </div>
+        <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 feature-card transition">
+            <div class="w-12 h-12 bg-[#b08d57]/10 rounded-xl flex items-center justify-center text-2xl mb-5">🎨</div>
+            <h3 class="text-xl font-semibold">Personalización total</h3>
+            <p class="text-slate-600 mt-3">Tu logo, tus colores, tus precios por distrito. La calculadora se adapta a tu imagen de marca.</p>
+        </div>
+    </div>
+</section>
+
+<!-- CARACTERÍSTICAS DETALLADAS -->
+<section id="caracteristicas" class="bg-slate-50 py-20">
+    <div class="container mx-auto px-6">
+        <div class="text-center max-w-3xl mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold">Todo lo que necesitas para vender más</h2>
+            <p class="text-lg text-slate-600 mt-4">Una herramienta pensada por y para agentes inmobiliarios.</p>
+        </div>
+        <div class="grid md:grid-cols-2 gap-12 mt-16">
+            <div class="space-y-8">
+                <div class="flex gap-4">
+                    <span class="text-3xl text-[#b08d57]">✓</span>
+                    <div><span class="font-semibold text-lg">Informe PDF automático</span><p class="text-slate-600">El cliente recibe un PDF profesional con su valoración, tu logo y un call to action para contactarte.</p></div>
+                </div>
+                <div class="flex gap-4">
+                    <span class="text-3xl text-[#b08d57]">✓</span>
+                    <div><span class="font-semibold text-lg">Plusvalía e impuestos integrados</span><p class="text-slate-600">Calcula también la plusvalía municipal, ITP e IRPF de forma orientativa. Valor añadido para tus clientes.</p></div>
+                </div>
+                <div class="flex gap-4">
+                    <span class="text-3xl text-[#b08d57]">✓</span>
+                    <div><span class="font-semibold text-lg">Código QR para campañas offline</span><p class="text-slate-600">Generamos un QR único para que lo imprimas en tarjetas, folletos o carteles. Capta leads desde el mundo físico.</p></div>
+                </div>
+            </div>
+            <div class="space-y-8">
+                <div class="flex gap-4">
+                    <span class="text-3xl text-[#b08d57]">✓</span>
+                    <div><span class="font-semibold text-lg">Panel de administración</span><p class="text-slate-600">Gestiona todos tus leads, configura tus distritos y precios, y visualiza estadísticas básicas.</p></div>
+                </div>
+                <div class="flex gap-4">
+                    <span class="text-3xl text-[#b08d57]">✓</span>
+                    <div><span class="font-semibold text-lg">Automatización de emails</span><p class="text-slate-600">Secuencia de 3 correos para nutrir a tus leads sin que hagas nada (disponible en plan Premium).</p></div>
+                </div>
+                <div class="flex gap-4">
+                    <span class="text-3xl text-[#b08d57]">✓</span>
+                    <div><span class="font-semibold text-lg">Soporte prioritario</span><p class="text-slate-600">Te ayudamos en menos de 24 horas a sacar el máximo partido a la herramienta.</p></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CÓMO FUNCIONA -->
+<section class="container mx-auto px-6 py-20">
+    <div class="text-center max-w-2xl mx-auto">
+        <h2 class="text-3xl md:text-4xl font-bold">Empieza a captar leads en 5 minutos</h2>
+    </div>
+    <div class="grid md:grid-cols-3 gap-6 mt-16 text-center">
+        <div class="p-6">
+            <div class="w-16 h-16 bg-[#b08d57]/10 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">1</div>
+            <h3 class="text-xl font-semibold">Elige tu plan</h3>
+            <p class="text-slate-600 mt-2">Selecciona el que mejor se adapte a tu equipo y empieza la prueba gratis.</p>
+        </div>
+        <div class="p-6">
+            <div class="w-16 h-16 bg-[#b08d57]/10 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">2</div>
+            <h3 class="text-xl font-semibold">Personaliza la calculadora</h3>
+            <p class="text-slate-600 mt-2">Sube tu logo, elige colores y ajusta los precios por distrito.</p>
+        </div>
+        <div class="p-6">
+            <div class="w-16 h-16 bg-[#b08d57]/10 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">3</div>
+            <h3 class="text-xl font-semibold">Comparte tu enlace</h3>
+            <p class="text-slate-600 mt-2">Recibe leads automáticamente desde tu web, redes o QR físicos.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ===== SECCIÓN: DETRÁS DE SMARTVALORA ===== -->
+<section class="bg-white py-16 border-y border-slate-200">
+    <div class="container mx-auto px-6 max-w-4xl">
+        <div class="flex flex-col md:flex-row gap-10 items-center">
+            <!-- Foto de Anna -->
+            <div class="w-48 h-48 rounded-full bg-slate-200 flex-shrink-0 border-4 border-[#b08d57]/20 overflow-hidden">
+                <img src="https://i.postimg.cc/X7KJBk9K/Retrat-professional-davant-Montserrat-resized.png" alt="Anna Epitié" class="w-full h-full object-cover">
+            </div>
+            <div class="flex-1">
+                <span class="text-[#b08d57] font-semibold text-sm tracking-wider">DETRÁS DE SMARTVALORA</span>
+                <h2 class="text-3xl font-bold mt-2">Hola, soy Anna Epitié</h2>
+                <p class="text-slate-600 mt-4 leading-relaxed">
+                    Agente inmobiliaria en Manresa desde hace 4 años. Durante este tiempo he visto cómo muchas agencias perdían oportunidades simplemente porque no podían dar una respuesta inmediata a quienes preguntaban: ¿cuánto vale mi piso? Por eso creé smartValora: una herramienta que hace ese trabajo por ti, con tu marca, y te entrega leads cualificados sin que muevas un dedo. Hoy, además de usarla yo misma, ayudo a otras agencias a hacer lo mismo.
+                </p>
+                <p class="text-slate-700 font-medium mt-4">— Anna Epitié</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- PRECIOS (con enlaces de Stripe) -->
+<section id="precios" class="bg-slate-50 py-20">
+    <div class="container mx-auto px-6">
+        <div class="text-center max-w-3xl mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold">Planes pensados para ti</h2>
+            <p class="text-lg text-slate-600 mt-4">Sin permanencia. Cancela cuando quieras.</p>
+        </div>
+        <div class="grid md:grid-cols-3 gap-6 mt-16 max-w-5xl mx-auto">
+            <!-- Plan Básico -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 pricing-card">
+                <h3 class="text-xl font-bold">Básico</h3>
+                <p class="text-slate-500 mt-2">Para agentes individuales</p>
+                <div class="mt-4 text-3xl font-bold">29€ <span class="text-base font-normal text-slate-500">/mes</span></div>
+                <ul class="mt-6 space-y-3 text-sm">
+                    <li class="flex items-center gap-2"><span class="text-[#b08d57]">✓</span> 1 agente</li>
+                    <li class="flex items-center gap-2"><span class="text-[#b08d57]">✓</span> 50 leads/mes</li>
+                    <li class="flex items-center gap-2"><span class="text-[#b08d57]">✓</span> Personalización completa</li>
+                    <li class="flex items-center gap-2"><span class="text-[#b08d57]">✓</span> Informe PDF básico</li>
+                    <li class="flex items-center gap-2 text-slate-400"><span class="text-slate-300">✗</span> Automatización emails</li>
+                </ul>
+                <a href="https://buy.stripe.com/fZucN57UG1uH80B7Qn3oA00" target="_blank" class="mt-8 block w-full text-center py-3 border border-slate-300 rounded-lg font-medium hover:bg-slate-50">Seleccionar</a>
+            </div>
+            <!-- Plan Profesional (popular) -->
+            <div class="bg-white rounded-2xl shadow-lg border-2 border-[#b08d57] p-8 pricing-card popular relative">
+                <span class="absolute top-0 right-8 bg-[#b08d57] text-white text-xs font-bold px-3 py-1 rounded-b-lg">MÁS ELEGIDO</span>
+                <h3 class="text-xl font-bold">Profesional</h3>
+                <p class="text-slate-500 mt-2">Para equipos pequeños</p>
+                <div class="mt-4 text-3xl font-bold">49€ <span class="text-base font-normal text-slate-500">/mes</span></div>
+                <ul class="mt-6 space-y-3 text-sm">
+                    <li class="flex items-center gap-2"><span class="text-[#b08d57]">✓</span> 3 agentes</li>
+                    <li class="flex items-center gap-2"><span class="text-[#b08d57]">✓</span> Leads ilimitados</li>
+                    <li class="flex items-center gap-2"><span class="text-[#b08d57]">✓</span> Informe PDF avanzado</li>
+                    <li class="flex items-center gap-2"><span class="text-[#b08d57]">✓</span> Código QR personalizado</li>
+                    <li class="flex items-center gap-2"><span class="text-slate-300">✗</span> Automatización emails</li>
+                </ul>
+                <a href="https://buy.stripe.com/aFadR9grc8X95St8Ur3oA01" target="_blank" class="mt-8 block w-full text-center py-3 btn-primary rounded-lg font-medium">Seleccionar</a>
+            </div>
+            <!-- Plan Premium -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 pricing-card">
+                <h3 class="text-xl font-bold">Premium</h3>
+                <p class="text-slate-500 mt-2">Para agencias consolidadas</p>
+                <div class="mt-4 text-3xl font-bold">99€ <span class="text-base font-normal text-slate-500">/mes</span></div>
+                <ul class="mt-6 space-y-3 text-sm">
+                    <li class="flex items-center gap-2"><span class="text-[#b08d57]">✓</span> 10 agentes</li>
+                    <li class="flex items-center gap-2"><span class="text-[#b08d57]">✓</span> Leads ilimitados</li>
+                    <li class="flex items-center gap-2"><span class="text-[#b08d57]">✓</span> Todo lo anterior</li>
+                    <li class="flex items-center gap-2"><span class="text-[#b08d57]">✓</span> Automatización emails</li>
+                    <li class="flex items-center gap-2"><span class="text-[#b08d57]">✓</span> Soporte prioritario 24h</li>
+                </ul>
+                <a href="https://buy.stripe.com/7sY28r6QC8X9cgRdaH3oA02" target="_blank" class="mt-8 block w-full text-center py-3 border border-slate-300 rounded-lg font-medium hover:bg-slate-50">Seleccionar</a>
+            </div>
+        </div>
+        <p class="text-center text-sm text-slate-500 mt-8">Todos los planes incluyen 14 días de prueba gratuita. Sin permanencia.</p>
+        <p class="text-center text-sm text-slate-400 mt-2">Tras el pago te contactaremos en menos de 24h para configurar tu calculadora personalizada.</p>
+    </div>
+</section>
+
+<!-- PREGUNTAS FRECUENTES -->
+<section class="bg-slate-50 py-20">
+    <div class="container mx-auto px-6 max-w-3xl">
+        <h2 class="text-3xl font-bold text-center">Preguntas frecuentes</h2>
+        <div class="mt-12 space-y-4">
+            <details class="border border-slate-200 rounded-lg bg-white p-4">
+                <summary class="cursor-pointer font-medium flex justify-between items-center">¿Puedo probarlo antes de pagar? <span class="text-[#b08d57] text-xl">+</span></summary>
+                <p class="mt-3 text-slate-600">Sí, ofrecemos 14 días de prueba gratuita sin necesidad de tarjeta de crédito. Puedes configurar tu calculadora y empezar a captar leads.</p>
+            </details>
+            <details class="border border-slate-200 rounded-lg bg-white p-4">
+                <summary class="cursor-pointer font-medium flex justify-between items-center">¿Qué pasa si supero el límite de leads del plan Básico? <span class="text-[#b08d57] text-xl">+</span></summary>
+                <p class="mt-3 text-slate-600">Te avisaremos y podrás ampliar al plan Profesional o contratar un paquete extra de leads. Nunca perderás los datos captados.</p>
+            </details>
+            <details class="border border-slate-200 rounded-lg bg-white p-4">
+                <summary class="cursor-pointer font-medium flex justify-between items-center">¿Puedo cambiar los precios por distrito yo mismo? <span class="text-[#b08d57] text-xl">+</span></summary>
+                <p class="mt-3 text-slate-600">Sí, desde el panel de administración puedes ajustar los €/m² de cada distrito, así como los factores de corrección. Todo en tiempo real.</p>
+            </details>
+            <details class="border border-slate-200 rounded-lg bg-white p-4">
+                <summary class="cursor-pointer font-medium flex justify-between items-center">¿Cómo recibo los leads? <span class="text-[#b08d57] text-xl">+</span></summary>
+                <p class="mt-3 text-slate-600">Puedes recibirlos por email, o con una integración vía webhook a tu CRM favorito (Monday, HubSpot, etc.). También tienes un panel donde consultarlos.</p>
+            </details>
+            <details class="border border-slate-200 rounded-lg bg-white p-4">
+                <summary class="cursor-pointer font-medium flex justify-between items-center">¿Hay permanencia? <span class="text-[#b08d57] text-xl">+</span></summary>
+                <p class="mt-3 text-slate-600">No, todos los planes son mensuales y puedes cancelar cuando quieras desde tu panel.</p>
+            </details>
+        </div>
+    </div>
+</section>
+
+<!-- CONTACTO / DEMO -->
+<section id="demo" class="container mx-auto px-6 py-20">
+    <div class="max-w-2xl mx-auto text-center">
+        <h2 class="text-3xl md:text-4xl font-bold">¿Listo para transformar tu captación?</h2>
+        <p class="text-lg text-slate-600 mt-4">Cuéntanos qué necesitas y te ayudamos a configurar tu calculadora personalizada.</p>
+        <form class="mt-10 space-y-4 text-left" name="demo" method="POST" data-netlify="true" action="/gracias.html">
+            <div class="grid md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Nombre</label>
+                    <input type="text" class="w-full border border-slate-300 rounded-lg px-4 py-3" placeholder="Tu nombre" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Agencia</label>
+                    <input type="text" class="w-full border border-slate-300 rounded-lg px-4 py-3" placeholder="Nombre de tu inmobiliaria">
+                </div>
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Email</label>
+                <input type="email" class="w-full border border-slate-300 rounded-lg px-4 py-3" placeholder="tu@email.com" required>
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">Teléfono</label>
+                <input type="tel" class="w-full border border-slate-300 rounded-lg px-4 py-3" placeholder="+34 600 000 000">
+            </div>
+            <div>
+                <label class="block text-sm font-medium mb-1">¿Qué plan te interesa?</label>
+                <select class="w-full border border-slate-300 rounded-lg px-4 py-3">
+                    <option>Básico (29€/mes)</option>
+                    <option>Profesional (49€/mes)</option>
+                    <option>Premium (99€/mes)</option>
+                    <option>No lo sé, quiero asesoramiento</option>
+                </select>
+            </div>
+            <!-- TU FRASE DE CIERRE -->
+            <p class="text-sm text-slate-600 italic text-center mt-2">Soy Anna, estaré encantada de ayudarte personalmente a configurar tu calculadora.</p>
+            <input type="hidden" name="form-name" value="demo">
+            <button type="submit" class="w-full btn-primary text-white font-medium py-4 rounded-lg text-lg">Solicitar demo gratuita</button>
+            <p class="text-xs text-slate-500 text-center">Al enviar aceptas nuestra <a href="privacidad.html" class="underline hover:text-slate-700">política de privacidad</a>. Te contactaremos en menos de 24h.</p>
+        </form>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="bg-slate-900 text-slate-400 py-12">
+    <div class="container mx-auto px-6">
+        <div class="grid md:grid-cols-4 gap-8">
+            <div>
+                <div class="flex items-center gap-2 text-white">
+                    <div class="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center text-sm font-bold">AE</div>
+                    <span class="font-semibold">smart<span class="text-[#b08d57]">Valora</span></span>
+                </div>
+                <p class="mt-4 text-sm">La calculadora de valoración white label para inmobiliarias, creada por Anna Epitié.</p>
+            </div>
+            <div>
+                <h4 class="text-white font-medium mb-4">Producto</h4>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="#caracteristicas" class="hover:text-white">Características</a></li>
+                    <li><a href="#precios" class="hover:text-white">Precios</a></li>
+                    <li><a href="#demo" class="hover:text-white">Demo</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-medium mb-4">Legal</h4>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="aviso-legal.html" class="hover:text-white">Aviso legal</a></li>
+                    <li><a href="privacidad.html" class="hover:text-white">Política de privacidad</a></li>
+                    <li><a href="condiciones.html" class="hover:text-white">Condiciones de uso</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-medium mb-4">Contacto</h4>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="mailto:hola@smartvalora.com" class="hover:text-white">hola@smartvalora.com</a></li>
+                    <li><a href="tel:+34632831009" class="hover:text-white">+34 632 83 10 09</a></li>
+                    <li>Manresa · Barcelona</li>
+                </ul>
+            </div>
+        </div>
+        <div class="border-t border-slate-800 mt-12 pt-8 text-sm text-center">
+            © 2026 smartValora by Anna Epitié Inmobiliaria. Todos los derechos reservados.
+        </div>
+    </div>
+</footer>
+
+<!-- CHAT -->
+<button id="chat-button" aria-label="Abrir chat de ayuda">💬</button>
+<div id="chat-panel">
+    <div class="chat-header">
+        <span>¿Necesitas ayuda?</span>
+        <button id="close-chat">✕</button>
+    </div>
+    <div class="chat-messages" id="chat-messages">
+        <div class="message bot">¡Hola! Soy el asistente de smartValora. ¿En qué puedo ayudarte?</div>
+    </div>
+    <div class="quick-reply-container" id="quick-reply-container">
+        <button class="quick-reply" data-question="Planes y precios">Planes y precios</button>
+        <button class="quick-reply" data-question="Prueba gratuita">Prueba gratuita</button>
+        <button class="quick-reply" data-question="Personalización">Personalización</button>
+        <button class="quick-reply" data-question="Soporte">Soporte</button>
+    </div>
+    <div class="chat-input-area">
+        <input type="text" id="chat-input" placeholder="Escribe un mensaje...">
+        <button id="send-message">➤</button>
+    </div>
+</div>
+
+<script>
+    (function() {
+        const chatButton = document.getElementById('chat-button');
+        const chatPanel = document.getElementById('chat-panel');
+        const closeChat = document.getElementById('close-chat');
+        const chatMessages = document.getElementById('chat-messages');
+        const chatInput = document.getElementById('chat-input');
+        const sendButton = document.getElementById('send-message');
+        const quickReplyButtons = document.querySelectorAll('.quick-reply');
+
+        chatButton.addEventListener('click', () => { chatPanel.classList.add('open'); });
+        closeChat.addEventListener('click', () => { chatPanel.classList.remove('open'); });
+
+        function addUserMessage(text) {
+            const msgDiv = document.createElement('div');
+            msgDiv.classList.add('message', 'user');
+            msgDiv.textContent = text;
+            chatMessages.appendChild(msgDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        function addBotMessage(text) {
+            const msgDiv = document.createElement('div');
+            msgDiv.classList.add('message', 'bot');
+            msgDiv.textContent = text;
+            chatMessages.appendChild(msgDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        function getBotReply(question) {
+            const q = question.toLowerCase();
+            if (q.includes('plan') || q.includes('precio') || q.includes('costo')) return "Tenemos tres planes: Básico (29€/mes), Profesional (49€/mes) y Premium (99€/mes). Todos incluyen 14 días de prueba gratuita. ¿Quieres que te cuente más sobre algún plan en concreto?";
+            if (q.includes('prueba') || q.includes('gratis') || q.includes('demo')) return "Sí, ofrecemos 14 días de prueba gratuita sin necesidad de tarjeta de crédito. Puedes registrarte y configurar tu calculadora con tu marca. ¿Te gustaría que te ayudemos con la configuración?";
+            if (q.includes('personaliz') || q.includes('logo') || q.includes('colores')) return "Puedes personalizar completamente la calculadora: subir tu logo, elegir colores corporativos y ajustar los precios por distrito. Tú tienes el control total.";
+            if (q.includes('soporte') || q.includes('ayuda') || q.includes('contacto')) return "Nuestro equipo de soporte está disponible de lunes a viernes de 9 a 18h. Puedes escribirnos a hola@smartvalora.com o llamarnos al +34 632 83 10 09. También puedes usar este chat en horario laboral.";
+            return "Gracias por tu mensaje. Puedes escribirnos a hola@smartvalora.com o llamarnos al +34 632 83 10 09 (lunes a viernes, 9–18h). Te responderemos lo antes posible.";
+        }
+        function sendMessage() {
+            const text = chatInput.value.trim();
+            if (text === '') return;
+            addUserMessage(text);
+            chatInput.value = '';
+            setTimeout(() => { addBotMessage(getBotReply(text)); }, 600);
+        }
+        sendButton.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
+        quickReplyButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const question = btn.getAttribute('data-question');
+                addUserMessage(question);
+                setTimeout(() => { addBotMessage(getBotReply(question)); }, 500);
+            });
+        });
+    })();
+</script>
+</body>
+</html>

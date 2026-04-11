@@ -1,0 +1,15 @@
+| Pati/Traster/zona comuna | Baixos | 1r | 2n | 3r |
+|--------------------------|--------|----|----|----|
+| Visitat                  |        |    |    |    |
+| Humitats                 |   ?    |no  |?   |  no|
+| Calefacció               |   si   |si  |si  | no |
+| Gas                      |   si   |si  |si  | si |
+| Comptador elèctric independent? si|si  |si  | si |a 
+| Instal·lació elèctrica renovada|si|si  |si  | si |
+com
+| Baixants                 | no     | no |no  | no |
+| Tancaments / fusteries renovats|no|no  |no  |no  |
+| Ibi anual                |        |    |    |    |
+| Divisó horitzonal        |no      |no  |no  |no  |
+
+si he revisat el "suposat" pati o terrassa al tercer pis i he preguntat a la propietat , el que hauría de ser un pati al tercer pis ho van tapar amb la teulada nova ja que no es podia pujar o entrar desde el tercer pis i ha quedat com a simple balconada sense profunditat.
